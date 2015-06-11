@@ -214,9 +214,23 @@ class PivotalStory {
     }
 
 
+    /**
+     * Determine if this story is completed
+     * @return bool
+     */
     public function isCompleted () {
         if ( $this->current_state == 'accepted' ) return true;
         if ( in_array($this->current_state,array('accepted','delivered')) ) return true;
+        return false;
+    }
+
+
+    /**
+     * Determine if this story is in progress
+     * @return bool
+     */
+    public function inProgress () {
+        if ( in_array($this->current_state,array('started','finished','rejected')) ) return true;
         return false;
     }
 
