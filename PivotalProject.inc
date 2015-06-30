@@ -23,14 +23,30 @@ class PivotalProject {
 	public function __construct ( $project_id=null ) {
         $this->stories = null;
         $this->epics = null;
+        $this->people = null;
         $this->iterations = null;
         if ( empty($project_id) || !is_numeric($project_id) ) return;
         $result = Pivotal::callAPI("projects/$project_id",'GET');
-        $this->project_id = $result->id;
-        $this->name = $result->name;
+        //print_r($result); //die();
+        $this->project_id = isset($result->id) ? $result->id : null;
+        $this->name = isset($result->name) ? $result->name : null;
 	}
 
 
+    /**
+     * Do a quick check to see if this project seems valid
+     * @return bool
+     */
+    public function isValid () {
+        if ( isset($this->project_id) && !empty($this->name) ) return true;
+        return false;
+    }
+
+
+    /**
+     * Add a story to this project
+     * @param PivotalStory $story
+     */
     public function addStory ( $story ) {
         $json = json_encode($story);
         Pivotal::getResultJSON("/projects/$this->project_id/stories");
@@ -108,6 +124,22 @@ class PivotalProject {
         $this->iterations = PivotalIteration::getIterations($this->project_id);
         return $this->iterations;
 	}
+
+
+    /**
+     * Get the current iteration (known by current time)
+     * @return PivotalIteration
+     */
+    public function getCurrentIteration () {
+        $this->getIterations();
+        if ( !is_array($this->iterations) || count($this->iterations) < 1 ) return null;
+        foreach ( $this->iterations as $iteration ) {
+            if (time() > $iteration->start && time() < $iteration->finish) {
+                return $iteration;
+            }
+        }
+        return null;
+    }
 
 
     /**

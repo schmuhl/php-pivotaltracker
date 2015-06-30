@@ -107,9 +107,7 @@ class Pivotal {
 
             // make sure the response is kosher
             if ( isset($result->error) ) {
-                echo Pivotal::$domain.'services/v5/'.$url."<br/>";
-                print_r($data);
-                echo "<pre>" . print_r($result, true) . "</pre>";
+                error_log(Pivotal::$domain.'services/v5/'.$url."\n".print_r($data,true)."\n" . print_r($result, true));
                 $json = null;
             } else $json = json_encode($result);
         }
