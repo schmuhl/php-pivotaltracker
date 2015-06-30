@@ -42,6 +42,7 @@ class PivotalStory {
 	public $accepted_at;
 	public $labels;
     public $owner_ids;
+    public $points; // supported in v3?
 	//public $iteration;
     //public $requested_by;
     //public $owned_by;
@@ -61,6 +62,7 @@ class PivotalStory {
 	 * @param object $object
 	 */
 	public function copy ( $object ) {
+        //if ( $object->story_type == 'feature' ) { print_r($object);  }
 		$vars = get_class_vars("PivotalStory");
 		foreach ( $vars as $var=>$value ) {  // loop through and set all of the variables
 			if ( isset($object->$var) ) $this->$var = $object->$var;
@@ -235,9 +237,36 @@ class PivotalStory {
     }
 
 
+    /**
+     * Get the owners for this story
+     * @return string
+     * @todo This function crashes PHP???
+     */
+    public function getOwners () {
+        return 'dude';
+        echo 'wha?';
+        if ( empty($this->project_id) ) return null;
+        echo 'poop';
+        $project = new PivotalProject($this->project_id);
+        echo('pooh');
+        $owners = "";
+        foreach ( $this->owner_ids as $id ) {
+            if ( isset($project->people[$id]) ) $owners .= $project->people[$id]->initials.', ';
+            //else $owners .= '?, ';
+        }
+        echo 'poopies';
+        $owners = substr($owners,0,strlen($owners)-2);
+        echo 'crap';
+        return $owners;
+    }
 
+
+    /**
+     * Get the unique story states
+     * @return array
+     */
 	public static function getStates () {
-		return array ( 'started','finished','delivered','accepted','rejected','planned','unstarted','unscheduled' );
+		return array ( 'unscheduled','unstarted','planned','started','rejected','finished','delivered','accepted' );
 	}
 
 
@@ -264,7 +293,7 @@ class PivotalStory {
 				$story->project_id = $projectID;
 				$stories []= $story;
 			}
-		} else addAlert('Malformed response on '.$url);
+		} else error_log('Malformed response on '.$url);
 		return $stories;
 	}
 
