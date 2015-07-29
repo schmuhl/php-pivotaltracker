@@ -67,7 +67,7 @@ class PivotalIteration {
 	 */
 	public static function getIterations ( $projectID ) {
         if ( !is_numeric($projectID) ) return null;
-        $result = Pivotal::callAPI("projects/$projectID/iterations",'GET');
+        $result = Pivotal::callAPI("projects/$projectID/iterations?limit=100",'GET');
         if ( is_array($result) ) {
             $iterations = array();
             foreach ( $result as $i ) {
@@ -75,7 +75,7 @@ class PivotalIteration {
                 $iteration->copy($i);
                 $iterations[$iteration->number] = $iteration;
             }
-            //print_r($iterations); die();
+            //die(print_r($iterations,true));
             return $iterations;
         }
         error_log("Could not get project iterations: (".print_r($result,true).")");

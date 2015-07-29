@@ -132,12 +132,15 @@ class PivotalProject {
      */
     public function getCurrentIteration () {
         $this->getIterations();
-        if ( !is_array($this->iterations) || count($this->iterations) < 1 ) return null;
-        foreach ( $this->iterations as $iteration ) {
-            if (time() > $iteration->start && time() < $iteration->finish) {
-                return $iteration;
+        if ( is_array($this->iterations) ) {
+            foreach ($this->iterations as $iteration) {
+                //echo "<br/>Looking at iteration $iteration->project_id #$iteration->number from ".date('n/d/Y g:ia',$iteration->start)." to ".date('n/d/Y g:ia',$iteration->finish);
+                if (time() > $iteration->start && time() < $iteration->finish) {
+                    return $iteration;
+                }
             }
         }
+        die("<br/>$this->name has no current iteration!");
         return null;
     }
 
